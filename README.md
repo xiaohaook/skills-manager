@@ -26,6 +26,8 @@
 
 ## 快速开始
 
+HTTPS：
+
 ```bash
 git clone https://github.com/xiaohaook/skills-manager.git skills-manager
 cd skills-manager
@@ -33,7 +35,25 @@ npm install
 npm run tauri dev
 ```
 
-（也可 fork 后替换为 fork 地址。）
+SSH（已配置 [GitHub SSH 密钥](https://docs.github.com/en/authentication/connecting-to-github-with-ssh) 时推荐）：
+
+```bash
+git clone git@github.com:xiaohaook/skills-manager.git skills-manager
+cd skills-manager
+npm install
+npm run tauri dev
+```
+
+fork 后把上面的 `xiaohaook/skills-manager` 换成你的 `用户名/仓库名` 即可。
+
+### 维护者：用 SSH 推送
+
+若本地已用 `gh repo create` 得到 HTTPS 的 `origin`，可改为 SSH 再推送：
+
+```bash
+git remote set-url origin git@github.com:xiaohaook/skills-manager.git
+git push -u origin main
+```
 
 ## 常用脚本
 
