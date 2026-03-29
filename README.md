@@ -27,11 +27,13 @@
 ## 快速开始
 
 ```bash
-git clone <repository-url> skills-manager
+git clone https://github.com/xiaohaook/skills-manager.git skills-manager
 cd skills-manager
 npm install
 npm run tauri dev
 ```
+
+（也可 fork 后替换为 fork 地址。）
 
 ## 常用脚本
 
