@@ -1,6 +1,17 @@
 import { useState, useEffect, useRef, useDeferredValue, useMemo, useCallback } from 'react'
 import { invoke } from '@tauri-apps/api/core'
-import { Search, FolderOpen, CheckCircle, XCircle, Flame, Trash2, Download, RefreshCw, Terminal } from 'lucide-react'
+import {
+  Search,
+  FolderOpen,
+  CheckCircle,
+  XCircle,
+  Flame,
+  Trash2,
+  Download,
+  RefreshCw,
+  Loader2,
+  Terminal,
+} from 'lucide-react'
 import { Toast } from './components/Toast'
 import { HotSkillPlatformBadge } from './components/HotSkillPlatformBadge'
 import { ConfirmDialog } from './components/ConfirmDialog'
@@ -17,6 +28,9 @@ const SIDEBAR_WIDTH_KEY = 'skills-manager-sidebar-w'
 const SIDEBAR_MIN = 200
 const SIDEBAR_MAX = 520
 const SIDEBAR_DEFAULT = 268
+
+/** 占位 ID：表示「我的技能」页正在执行「在线安装」，避免热榜卡误判为「当前卡安装中」且误用 RefreshCw（易被当成 Reload） */
+const INSTALL_BUSY_ONLINE = '__skills_manager_online_install__'
 
 function normalizeSkillsPath(p: string): string {
   const t = p.trim()
@@ -366,6 +380,7 @@ function App() {
     }
 
     setInstalling(true)
+    setInstallingSkillId(INSTALL_BUSY_ONLINE)
     setToast({ message: `📥 正在下载...`, type: 'success' })
     try {
       await invoke('install_from_github', { repoUrl: installUrl, targetPath: installTargetPath() })
@@ -377,6 +392,7 @@ function App() {
       setToast({ message: `安装失败：${err}`, type: 'error' })
     } finally {
       setInstalling(false)
+      setInstallingSkillId(null)
     }
   }
 
@@ -770,8 +786,8 @@ function App() {
               disabled={installing || !installUrl.trim()}
               className="flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-zinc-300 dark:disabled:bg-zinc-700"
             >
-              {installing ? <RefreshCw className="h-5 w-5 animate-spin" /> : <Download className="h-5 w-5" />}
-              在线安装
+              {installing ? <Loader2 className="h-5 w-5 animate-spin" aria-hidden /> : <Download className="h-5 w-5" aria-hidden />}
+              {installing ? '安装中…' : '在线安装'}
             </button>
           </div>
         )}
@@ -912,19 +928,23 @@ function App() {
                     >
                       {hotInstalled ? (
                         <>
-                          <CheckCircle className="h-4 w-4 shrink-0" /> 已安装
+                          <CheckCircle className="h-4 w-4 shrink-0" aria-hidden /> 已安装
                         </>
                       ) : installingSkillId === skill.id ? (
                         <>
-                          <RefreshCw className="h-4 w-4 animate-spin" /> 安装中...
+                          <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden /> 安装中…
+                        </>
+                      ) : installing && installingSkillId === INSTALL_BUSY_ONLINE ? (
+                        <>
+                          <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden /> 在线安装进行中
                         </>
                       ) : installing ? (
                         <>
-                          <RefreshCw className="h-4 w-4" /> 请等待...
+                          <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden /> 其他项安装中
                         </>
                       ) : (
                         <>
-                          <Download className="h-4 w-4" /> 安装
+                          <Download className="h-4 w-4 shrink-0" aria-hidden /> 安装
                         </>
                       )}
                     </button>
