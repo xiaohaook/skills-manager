@@ -10,7 +10,6 @@ import { AppSidebar } from './components/AppSidebar'
 import type { HotSkill, HotPlatformId } from './hotTypes'
 import { buildDynamicHotCategories, resolveHotSkillPlatform } from './hotTypes'
 import type { Skill, Claw, SourceConfig } from './types/domain'
-import { getSourceColor } from './lib/sourceColors'
 import { clampMenuPosition } from './lib/clampMenuPosition'
 import { buildLocalHotInstallIndex, isHotSkillInstalledLocally } from './lib/hotSkillLocalMatch'
 
@@ -260,19 +259,16 @@ function App() {
     }
   }
 
+  /** 侧栏数字与「全部」一致：均为技能个数（refCount 仅用于卡片角标，避免 56 vs 0+0+3 的歧义） */
   const clawList = useMemo(
     () => [
       { id: 'all', name: 'all', displayName: '全部', count: skills.length },
-      ...mergeSources(skills).map(source => {
-        const sourceSkills = skills.filter(s => s.source === source.name)
-        const refCountSum = sourceSkills.reduce((sum, skill) => sum + (skill.refCount || 0), 0)
-        return {
-          id: source.name,
-          name: source.name,
-          displayName: source.name,
-          count: refCountSum,
-        }
-      }),
+      ...mergeSources(skills).map(source => ({
+        id: source.name,
+        name: source.name,
+        displayName: source.name,
+        count: source.count,
+      })),
     ],
     [skills]
   )
@@ -1012,9 +1008,7 @@ function App() {
         ) : (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {filtered.map(skill => {
-              const installBadgeCount = Math.max(skill.refCount ?? 0, skill.otherClawCount ?? 0)
-              const badgePlatform =
-                selectedClaw === 'all' || selectedClaw === '全部' ? skill.source : selectedClaw
+              const refHintCount = Math.max(skill.refCount ?? 0, skill.otherClawCount ?? 0)
               return (
                 <div
                   key={skill.path}
@@ -1047,11 +1041,16 @@ function App() {
                       {skill.ready ? <CheckCircle className="h-4 w-4 text-green-500" /> : <XCircle className="h-4 w-4 text-red-500" />}
                       <span className="text-xs text-zinc-500 dark:text-zinc-500">{skill.source}</span>
                     </div>
-                    {installBadgeCount > 0 && (
-                      <div className="inline-flex items-center gap-1.5 rounded-full bg-zinc-200/90 px-2 py-1 text-xs dark:bg-white/10">
-                        <div className="h-2 w-2 rounded-full" style={{ backgroundColor: getSourceColor(badgePlatform) }} />
-                        <span className="font-medium text-zinc-900 dark:text-white">{badgePlatform}</span>
-                        <span className="font-semibold text-green-400">+{installBadgeCount}</span>
+                    {refHintCount > 0 && (
+                      <div
+                        className="inline-flex max-w-[55%] items-center gap-1 rounded-full bg-zinc-200/90 px-2 py-1 text-xs dark:bg-white/10"
+                        title="估算：其它来源目录中的副本，或指向本技能的符号链接数量（与左侧「来源」是否为就绪无关）"
+                        aria-label={`其它来源引用或副本约 ${refHintCount} 处`}
+                      >
+                        <span className="truncate text-zinc-600 dark:text-zinc-300">引用</span>
+                        <span className="shrink-0 font-semibold text-emerald-600 dark:text-emerald-400">
+                          +{refHintCount}
+                        </span>
                       </div>
                     )}
                   </div>

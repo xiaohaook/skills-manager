@@ -97,7 +97,11 @@ export function AppSidebar({
 
         {activeTab === 'skills' && (
           <div className="space-y-1">
-            <div className="mb-2 text-sm text-zinc-500 dark:text-zinc-400">来源</div>
+            <div className="mb-1 text-sm text-zinc-500 dark:text-zinc-400">来源</div>
+            <p className="mb-2 text-[11px] leading-snug text-zinc-500 dark:text-zinc-500">
+              右侧数字为该来源下的<strong className="font-medium text-zinc-600 dark:text-zinc-400">技能个数</strong>
+              （与卡片角标「引用」含义不同）
+            </p>
             {clawList.map((group, index) => {
               const dotColor = getSourceColor(group.displayName)
               return (
