@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>点击测试</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #111827;
+      color: white;
+      font-family: sans-serif;
+    }
+    .menu {
+      position: fixed;
+      background: #1f2937;
+      border: 1px solid #374151;
+      border-radius: 8px;
+      padding: 8px 0;
+      z-index: 50;
+      display: none;
+    }
+    .menu button {
+      display: block;
+      width: 100%;
+      padding: 8px 16px;
+      background: transparent;
+      border: none;
+      color: white;
+      text-align: left;
+      cursor: pointer;
+    }
+    .menu button:hover {
+      background: #374151;
+    }
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      pointer-events: none;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>点击测试</h1>
+  <p>右键点击页面任意位置</p>
+  
+  <div id="menu" class="menu">
+    <button id="testBtn">测试按钮</button>
+    <button onclick="hideMenu()">关闭</button>
+  </div>
+  
+  <div id="overlay" class="overlay"></div>
+  
+  <script>
+    const menu = document.getElementById('menu')
+    const overlay = document.getElementById('overlay')
+    const testBtn = document.getElementById('testBtn')
+    
+    // 右键菜单
+    document.addEventListener('contextmenu', (e) => {
+      e.preventDefault()
+      console.log('右键点击！', e.clientX, e.clientY)
+      menu.style.left = e.clientX + 'px'
+      menu.style.top = e.clientY + 'px'
+      menu.style.display = 'block'
+      overlay.style.display = 'block'
+    })
+    
+    // 测试按钮点击
+    testBtn.addEventListener('click', (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      console.log('=== 按钮点击！===')
+      alert('按钮被点击了！')
+      hideMenu()
+    })
+    
+    // 覆盖层点击
+    overlay.addEventListener('click', () => {
+      console.log('覆盖层点击')
+      hideMenu()
+    })
+    
+    function hideMenu() {
+      menu.style.display = 'none'
+      overlay.style.display = 'none'
+    }
+    
+    console.log('页面加载完成')
+  </script>
+</body>
+</html>

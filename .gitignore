@@ -1,0 +1,26 @@
+# Dependencies & build
+node_modules/
+dist/
+node_modules/.cache/
+.tmp/
+
+# Rust / Tauri
+src-tauri/target/
+
+# OS / editor
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Env & logs
+.env
+.env.local
+*.log
+npm-debug.log*
+*.bak
+
+# Test / coverage (if enabled later)
+coverage/

@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    @apply h-full min-h-0;
+  }
+
+  body {
+    @apply bg-zinc-950 text-zinc-100;
+    font-family:
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      Roboto,
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/*
+ * macOS Overlay 标题栏下，窗口移动依赖 WebKit 的 app-region（仅 data-tauri-drag-region 往往不够）。
+ */
+[data-tauri-drag-region] {
+  -webkit-app-region: drag;
+}
+
+/* 衬在交通灯区域内的控件需允许点击 */
+[data-no-drag] {
+  -webkit-app-region: no-drag;
+}
